@@ -11,7 +11,7 @@ type Scanner struct {
 	syn   Token
 }
 
-// NewScanner returns Scanner pointer
+// NewScanner creates a scanner to scan token
 func NewScanner(input Input) *Scanner {
 	return &Scanner{
 		input: input,
@@ -28,16 +28,17 @@ func (s *Scanner) EOF() bool {
 }
 
 // Peek returns current <token, syn>
-func (s *Scanner) Peek() string {
-	if s.token != "" {
-		return s.token
-	}
-	return s.Next()
+func (s *Scanner) Peek() (string, Token) {
+	// if s.token != "" {
+	// 	return "", s.syn
+	// }
+	return s.token, s.syn
 }
 
 // Next returns next <token, syn>
-func (s *Scanner) Next() string {
-
+func (s *Scanner) Next() (string, Token) {
+	s.read()
+	return s.Peek()
 }
 
 func (s *Scanner) setLex(token string, syn Token) {
@@ -45,6 +46,7 @@ func (s *Scanner) setLex(token string, syn Token) {
 	s.syn = syn
 }
 
+// read char until gets a total token
 func (s *Scanner) read() {
 	s.input.SkipWhitespace()
 	if s.input.EOF() {
@@ -68,6 +70,7 @@ func (s *Scanner) read() {
 
 }
 
+// read the num type
 func (s *Scanner) readNum() {
 	// first digit [1-9]
 	ch, _ := s.input.Next()
@@ -84,6 +87,7 @@ func (s *Scanner) readNum() {
 	s.syn = NUM
 }
 
+// read the identifier and keywords
 func (s *Scanner) readID() {
 	// first letter [A-Za-z_$]
 	ch, _ := s.input.Next()
@@ -105,6 +109,7 @@ func (s *Scanner) readID() {
 	}
 }
 
+// read the operations
 func (s *Scanner) readOp() {
 	// := < <> <= > >= = ; ( )
 	if ch, _ := s.input.Next(); ch == ':' {
