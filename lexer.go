@@ -87,10 +87,6 @@ var tokens = [...]string{
 	RPAREN:   ")",
 }
 
-func Lex() {
-
-}
-
 var keywords map[string]Token
 
 // init will be called before main function
@@ -107,8 +103,11 @@ type Input struct {
 	program            string
 }
 
-// NewInput returns the object for program's record
+// NewInput returns the object for program's position record
 func NewInput(program string) *Input {
+	if program[len(program)-1] != '#' {
+		program += "#"
+	}
 	return &Input{
 		position: 0,
 		row:      1,
@@ -130,11 +129,14 @@ func (i *Input) Peek() byte {
 	return i.program[i.position]
 }
 
-func (i *Input) skipWhitespace() {
-
+// SkipWhitespace will skip ' \t\n'
+func (i *Input) SkipWhitespace() {
+	for i.program[i.position] == ' ' || i.program[i.position] == '\t' || i.program[i.position] == '\n' {
+		i.position++
+	}
 }
 
-// Next returns the next char
+// Next returns current char and turns into next char
 func (i *Input) Next() (byte, error) {
 	if i.EOF() {
 		return '#', errors.New("EOF")
@@ -155,7 +157,32 @@ func (i *Input) Collapse(msg string) error {
 	return fmt.Errorf("Error:%s row:%d col:%d", msg, i.row, i.col)
 }
 
-func main() {
-	// program := "begin x:=9; if x>9 then x:=2*x+1/3; end #"
+// IsLetter returns true if ch is letter
+func IsLetter(ch byte) bool {
+	if ch > 'a' && ch < 'z' || ch > 'A' && ch < 'Z' || ch == '_' || ch == '$' {
+		return true
+	}
+	return false
+}
 
+// IsDigit returns true if ch is a digit
+func IsDigit(ch byte) bool {
+	if ch > '0' && ch < '9' {
+		return true
+	}
+	return false
+}
+
+func main() {
+	program := "begin x:=9; if x>9 then x:=2*x+1/3; end #"
+	input := NewInput(program)
+	ch2 := input.Peek()
+	ch1, _ := input.Next()
+	fmt.Println(ch1 == ch2)
+
+	if ch := 1; ch == 2 {
+
+	} else if ch2 := 3; ch2 == 3 {
+		fmt.Println(ch)
+	}
 }
