@@ -141,20 +141,19 @@ func (i *Input) SkipWhitespace() {
 	}
 }
 
-// Next returns current char and turns into next char
+// Next returns the next char
 func (i *Input) Next() (byte, error) {
 	if i.EOF() {
 		return '#', errors.New("EOF")
 	}
+	i.position++
 	if i.program[i.position] == '\n' {
 		i.row++
 		i.col = 0
 	} else {
 		i.col++
 	}
-	char := i.program[i.position]
-	i.position++
-	return char, nil
+	return i.program[i.position], nil
 }
 
 // Collapse returns error message for lex error

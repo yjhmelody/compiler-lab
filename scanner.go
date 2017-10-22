@@ -20,9 +20,17 @@ func NewScanner(input *Input) *Scanner {
 	}
 }
 
-// EOF returns true if token is null
+// SkipWhitespace will skip ' \t\n'
+func (s *Scanner) SkipWhitespace() {
+	ch, _ := s.input.Next()
+	for ch == ' ' || ch == '\t' || ch == '\n' {
+		ch, _ = s.input.Next()
+	}
+}
+
+// EOF returns true if token is '#'
 func (s *Scanner) EOF() bool {
-	if s.token == "" {
+	if s.token == "#" {
 		return true
 	}
 	return false
@@ -30,13 +38,10 @@ func (s *Scanner) EOF() bool {
 
 // Peek returns current <token, syn>
 func (s *Scanner) Peek() (string, Token) {
-	// if s.token != "" {
-	// 	return "", s.syn
-	// }
 	return s.token, s.syn
 }
 
-// Next returns next <token, syn>
+// Next returns the next <token, syn>
 func (s *Scanner) Next() (string, Token) {
 	s.read()
 	return s.Peek()
@@ -47,22 +52,20 @@ func (s *Scanner) setLex(token string, syn Token) {
 	s.syn = syn
 }
 
-// read char until gets a total token
+// read chars until gets a total token
 func (s *Scanner) read() {
-	s.input.SkipWhitespace()
-	if s.input.EOF() {
-		s.token = "#"
-	}
-	ch := s.input.Peek()
-	if IsDigit(ch) && ch != '0' {
+	// s.input.SkipWhitespace()
+	ch := s.input.Next()
+	if ch := s.input.Next(); ch == '#' {
+		s.setLex("#", SHARP)
+	} else if IsDigit(ch) {
 		s.readNum()
-		return
 	} else if IsLetter(ch) {
 		s.readID()
-		return
 	} else {
 		s.readOp()
 	}
+	s.SkipWhitespace()
 
 }
 
@@ -154,14 +157,14 @@ func (s *Scanner) readOp() {
 }
 
 func main() {
-	program := "begin x:=9; if x>9 then x:=2*x+1/3; end #"
+	program := "begin x := 9; if x>9 then x:=2*x+1/3; end #"
+	// program := " begin x 09 then x ; end #"
 	scanner := NewScanner(NewInput(program))
 	token, syn := scanner.Next()
-	fmt.Println("token:", token, "syn:", syn)
-
 	for !scanner.EOF() {
-		token, syn := scanner.Next()
-		// fmt.Println("token:", token, "syn:", syn)
-		fmt.Printf("<%s,%d>", token, syn)
+		token, syn = scanner.Next()
+		fmt.Printf("<%s,%d>\n", token, syn)
+		fmt.Println(scanner.input.position)
 	}
+	fmt.Printf("<%s,%d>\n", token, syn)
 }
