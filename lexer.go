@@ -171,7 +171,7 @@ func IsLetter(ch byte) bool {
 
 // IsDigit returns true if ch is a digit
 func IsDigit(ch byte) bool {
-	if ch > '0' && ch < '9' {
+	if ch >= '0' && ch <= '9' {
 		return true
 	}
 	return false
