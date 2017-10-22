@@ -10,6 +10,9 @@ import (
 // operator: :  :=  +  -  *  /  <  <=  <>  >  >=  =  ;  (  )  #
 // ID = letter (letter | digit)*
 // NUM = digit digit*
+// ID = [a-zA-Z_$][a-zA-Z_$0-9]*
+// NUM = [0-9] | [1-9][0-9]*
+// whitespace = [ \t\n]
 // 空格有空白、制表符和换行符组成。空格一般用来分隔ID、NUM、运算符、界符和关键字，词法分析阶段通常被忽略
 
 // Token is the set of lexical tokens
@@ -136,8 +139,9 @@ func (i *Input) Peek() byte {
 
 // SkipWhitespace will skip ' \t\n'
 func (i *Input) SkipWhitespace() {
-	for i.program[i.position] == ' ' || i.program[i.position] == '\t' || i.program[i.position] == '\n' {
-		i.position++
+	ch, _ := i.Next()
+	for IsWhitespace(ch) {
+		ch, _ = i.Next()
 	}
 }
 
@@ -172,6 +176,23 @@ func IsLetter(ch byte) bool {
 // IsDigit returns true if ch is a digit
 func IsDigit(ch byte) bool {
 	if ch >= '0' && ch <= '9' {
+		return true
+	}
+	return false
+}
+
+// IsOpChar returns true if ch is the first char of some operators or delimiters
+func IsOpChar(ch byte) bool {
+	switch ch {
+	case ':', '+', '-', '*', '/', '<', '>', '=', ';', '(', ')':
+		return true
+	}
+	return false
+}
+
+func IsWhitespace(ch byte) bool {
+	switch ch {
+	case ' ', '\t', '\r', '\n':
 		return true
 	}
 	return false

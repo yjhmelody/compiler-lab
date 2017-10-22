@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 )
 
 // Scanner stores token
@@ -22,10 +21,7 @@ func NewScanner(input *Input) *Scanner {
 
 // SkipWhitespace will skip ' \t\n'
 func (s *Scanner) SkipWhitespace() {
-	ch := s.input.Peek()
-	for ch == ' ' || ch == '\t' || ch == '\n' {
-		ch, _ = s.input.Next()
-	}
+	s.input.SkipWhitespace()
 }
 
 // EOF returns true if token is '#'
@@ -62,8 +58,13 @@ func (s *Scanner) read() {
 		s.readNum()
 	} else if IsLetter(ch) {
 		s.readID()
+	} else if IsOpChar(ch) {
+		if err := s.readOp(); err != nil {
+			fmt.Println(err)
+		}
 	} else {
-		s.readOp()
+		s.SkipWhitespace()
+		s.read()
 	}
 }
 
@@ -114,7 +115,7 @@ func (s *Scanner) readID() {
 }
 
 // read the operations
-func (s *Scanner) readOp() {
+func (s *Scanner) readOp() error {
 	// operator: :  :=  +  -  *  /  <  <=  <>  >  >=  =  ;  (  )  #
 	if ch := s.input.Peek(); ch == ':' {
 		if ch2, _ := s.input.Next(); ch2 == '=' {
@@ -183,13 +184,21 @@ func (s *Scanner) readOp() {
 		s.input.Next()
 
 	} else {
-		log.Fatal("readOp cannot recognize:", string(ch))
+		s.SkipWhitespace()
+		s.input.Next()
+		return s.input.Collapse("readOp cannot recognize")
 	}
+	return nil
 }
 
 func main() {
-	// program := "begin x := 9; if x>9 then x:=2*x+1/3; end #"
-	program := "begin x 09 then x1 ; end #"
+	program := " begin x := 9; if x > 9 then\r\r\n x := 2 * x + 1 / 3; \n end #"
+	// program := `
+	// begin x := 9;
+	// if x > 9 then
+	// 	x := 2 * x + 1 / 3
+	// end
+	// `
 
 	scanner := NewScanner(NewInput(program))
 
