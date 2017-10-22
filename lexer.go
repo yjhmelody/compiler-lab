@@ -38,9 +38,13 @@ const (
 	WHILE
 	DO
 	END
+	_
+	_
+	_
 	// data type
 	ID
 	NUM
+	_
 	// op type
 	ADD    // +
 	SUB    // -
@@ -48,12 +52,13 @@ const (
 	QUO    // /
 	COLON  // :
 	ASSIGN // :=
-	LSS    // <
-	NEQ    // <>
-	LEQ    // <=
-	GTR    // >
-	GEQ    // >=
-	EQ     // =
+	_
+	LSS // <
+	NEQ // <>
+	LEQ // <=
+	GTR // >
+	GEQ // >=
+	EQ  // =
 
 	SEMCOLON // ;
 	LPAREN   // (
@@ -173,16 +178,20 @@ func IsDigit(ch byte) bool {
 	return false
 }
 
-func main() {
-	program := "begin x:=9; if x>9 then x:=2*x+1/3; end #"
-	input := NewInput(program)
-	ch2 := input.Peek()
-	ch1, _ := input.Next()
-	fmt.Println(ch1 == ch2)
+// func main() {
+// 	program := "begin x:=9; if x>9 then x:=2*x+1/3; end #"
+// 	input := NewInput(program)
+// 	ch2 := input.Peek()
+// 	ch1, _ := input.Next()
+// 	fmt.Println(ch1 == ch2)
 
-	if ch := 1; ch == 2 {
+// 	if ch := 1; ch == 2 {
 
-	} else if ch2 := 3; ch2 == 3 {
-		fmt.Println(ch)
-	}
-}
+// 	} else if ch2 := 3; ch2 == 3 {
+// 		fmt.Println(ch)
+// 	}
+
+// 	for k, v := range tokens {
+// 		fmt.Println(k, v)
+// 	}
+// }
