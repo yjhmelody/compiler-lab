@@ -116,43 +116,36 @@ func (s *Scanner) readID() {
 // readOp read the operations
 func (s *Scanner) readOp() error {
 	// operator: :  :=  +  -  *  /  <  <=  <>  >  >=  =  ;  (  )  #
+	var tempByte []byte
 
-	if ch := s.input.Peek(); ch == ':' {
-		if ch2, _ := s.input.Next(); ch2 == '=' {
-			s.setLex(":=", ASSIGN)
-			s.input.Next()
-		} else {
-			s.setLex(":", COLON)
-		}
-	} else if ch == '<' {
-		switch ch2, _ := s.input.Next(); ch2 {
-		case '>':
-			s.setLex("<>", NEQ)
-			s.input.Next()
-		case '=':
-			s.setLex("<=", LEQ)
-			s.input.Next()
+	switch ch := s.input.Peek(); ch {
+	case '=', '+', '-', '*', '/', ';', '(', ')', '#':
+		s.setLex(string(ch), keywords[string(ch)])
+		s.input.Next()
+	case ':', '<', '>':
+		tempByte = append(tempByte, ch)
+		// switch
+		switch ch, _ := s.input.Next(); ch {
+		case '=', '>':
+			tempByte = append(tempByte, ch)
+			tempChar := string(tempByte)
+			if _, ok := keywords[tempChar]; ok {
+				s.setLex(tempChar, keywords[tempChar])
+				s.input.Next()
+			}
 		default:
-			s.setLex("<", LSS)
-		}
-	} else if ch == '>' {
-		switch ch2, _ := s.input.Next(); ch2 {
-		case '=':
-			s.setLex(">=", GEQ)
-			s.input.Next()
-		default:
-			s.setLex(">", GTR)
-		}
-	} else {
-		switch ch {
-		case '=', '+', '-', '*', '/', ';', '(', ')', '#':
-			tmpchar := string(ch)
-			s.setLex(tmpchar, keywords[tmpchar])
-			s.input.Next()
-		default:
-			s.input.Next()
+			tempChar := string(tempByte)
+			if _, ok := keywords[tempChar]; ok {
+				s.setLex(tempChar, keywords[tempChar])
+				s.input.Next()
+				return nil
+			}
 			return s.input.Collapse("readOp cannot recognize")
 		}
+		// endswitch
+	default:
+		s.input.Next()
+		return s.input.Collapse("readOp cannot recognize")
 	}
 	return nil
 }
@@ -161,7 +154,7 @@ func main() {
 	// program := " begin x := 9; if x > 9 then\r\r\n x := 2 * x + 1 / 3; \n end #"
 
 	program := `
-	begin x := 9;
+	begin @@ x := 9;
 	if x > 9 then
 		x @ := 2 * x + 1 / 3
 	end
