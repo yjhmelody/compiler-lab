@@ -63,6 +63,7 @@ func (s *Scanner) read() {
 			fmt.Println(err)
 		}
 	} else {
+		fmt.Println(s.input.Collapse("cannot recognize"), string(ch))
 		s.read()
 	}
 }
@@ -151,7 +152,6 @@ func (s *Scanner) readOp() error {
 }
 
 func main() {
-	// program := " begin x := 9; if x > 9 then\r\r\n x := 2 * x + 1 / 3; \n end #"
 
 	program := `
 	begin @@ x := 9;
@@ -159,12 +159,9 @@ func main() {
 		x @ := 2 * x + 1 / 3
 	end
 	`
-
 	scanner := NewScanner(NewInput(program))
-
 	token, syn := scanner.Next()
 	fmt.Printf("<%s , %d>\n", token, syn)
-
 	for !scanner.EOF() {
 		token, syn = scanner.Next()
 		fmt.Printf("<'%s', %d>\n", token, syn)
