@@ -100,7 +100,7 @@ var keywords map[string]Token
 // init will be called before main function
 func init() {
 	keywords = make(map[string]Token)
-	for i := BEGIN; i <= END; i++ {
+	for i := SHARP; i <= RPAREN; i++ {
 		keywords[tokens[i]] = i
 	}
 }

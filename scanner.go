@@ -43,7 +43,7 @@ func (s *Scanner) Next() (string, Token) {
 	return s.Peek()
 }
 
-// setLex is just for recording token info
+// setLex records current token info
 func (s *Scanner) setLex(token string, syn Token) {
 	s.token = token
 	s.syn = syn
@@ -63,12 +63,11 @@ func (s *Scanner) read() {
 			fmt.Println(err)
 		}
 	} else {
-		s.SkipWhitespace()
 		s.read()
 	}
 }
 
-// read the num type
+// readNum read the num type
 func (s *Scanner) readNum() {
 	// first digit [1-9]
 	ch := s.input.Peek()
@@ -90,7 +89,7 @@ func (s *Scanner) readNum() {
 	}
 }
 
-// read the identifier and keywords
+// readID read the identifier and keywords
 func (s *Scanner) readID() {
 	// first letter [A-Za-z_$]
 	ch := s.input.Peek()
@@ -114,9 +113,10 @@ func (s *Scanner) readID() {
 	}
 }
 
-// read the operations
+// readOp read the operations
 func (s *Scanner) readOp() error {
 	// operator: :  :=  +  -  *  /  <  <=  <>  >  >=  =  ;  (  )  #
+
 	if ch := s.input.Peek(); ch == ':' {
 		if ch2, _ := s.input.Next(); ch2 == '=' {
 			s.setLex(":=", ASSIGN)
@@ -124,30 +124,6 @@ func (s *Scanner) readOp() error {
 		} else {
 			s.setLex(":", COLON)
 		}
-	} else if ch == '=' {
-		s.setLex("=", EQ)
-		s.input.Next()
-
-	} else if ch == '+' {
-		s.setLex("+", ADD)
-		s.input.Next()
-
-	} else if ch == '-' {
-		s.setLex("-", SUB)
-		s.input.Next()
-
-	} else if ch == '*' {
-		s.setLex("*", MUL)
-		s.input.Next()
-
-	} else if ch == '/' {
-		s.setLex("/", QUO)
-		s.input.Next()
-
-	} else if ch == ';' {
-		s.setLex(";", SEMCOLON)
-		s.input.Next()
-
 	} else if ch == '<' {
 		switch ch2, _ := s.input.Next(); ch2 {
 		case '>':
@@ -167,38 +143,29 @@ func (s *Scanner) readOp() error {
 		default:
 			s.setLex(">", GTR)
 		}
-	} else if ch == ';' {
-		s.setLex(";", SEMCOLON)
-		s.input.Next()
-
-	} else if ch == '(' {
-		s.setLex("(", LPAREN)
-		s.input.Next()
-
-	} else if ch == ')' {
-		s.setLex(")", RPAREN)
-		s.input.Next()
-
-	} else if ch == '#' {
-		s.setLex("#", SHARP)
-		s.input.Next()
-
 	} else {
-		s.SkipWhitespace()
-		s.input.Next()
-		return s.input.Collapse("readOp cannot recognize")
+		switch ch {
+		case '=', '+', '-', '*', '/', ';', '(', ')', '#':
+			tmpchar := string(ch)
+			s.setLex(tmpchar, keywords[tmpchar])
+			s.input.Next()
+		default:
+			s.input.Next()
+			return s.input.Collapse("readOp cannot recognize")
+		}
 	}
 	return nil
 }
 
 func main() {
-	program := " begin x := 9; if x > 9 then\r\r\n x := 2 * x + 1 / 3; \n end #"
-	// program := `
-	// begin x := 9;
-	// if x > 9 then
-	// 	x := 2 * x + 1 / 3
-	// end
-	// `
+	// program := " begin x := 9; if x > 9 then\r\r\n x := 2 * x + 1 / 3; \n end #"
+
+	program := `
+	begin x := 9;
+	if x > 9 then
+		x @ := 2 * x + 1 / 3
+	end
+	`
 
 	scanner := NewScanner(NewInput(program))
 
@@ -207,6 +174,6 @@ func main() {
 
 	for !scanner.EOF() {
 		token, syn = scanner.Next()
-		fmt.Printf("<%s , %d>\n", token, syn)
+		fmt.Printf("<'%s', %d>\n", token, syn)
 	}
 }
