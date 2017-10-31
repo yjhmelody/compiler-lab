@@ -139,7 +139,7 @@ func (i *Input) Peek() byte {
 
 // SkipWhitespace will skip ' \t\n'
 func (i *Input) SkipWhitespace() {
-	ch, _ := i.Next()
+	ch := i.Peek()
 	for IsWhitespace(ch) {
 		ch, _ = i.Next()
 	}
@@ -167,7 +167,7 @@ func (i *Input) Collapse(msg string) error {
 
 // IsLetter returns true if ch is letter
 func IsLetter(ch byte) bool {
-	if ch > 'a' && ch < 'z' || ch > 'A' && ch < 'Z' || ch == '_' || ch == '$' {
+	if ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' {
 		return true
 	}
 	return false
@@ -190,6 +190,7 @@ func IsOpChar(ch byte) bool {
 	return false
 }
 
+// IsWhitespace returns true if ch is whitespace
 func IsWhitespace(ch byte) bool {
 	switch ch {
 	case ' ', '\t', '\r', '\n':
