@@ -52,7 +52,7 @@ func (s *Scanner) setLex(token string, syn Token) {
 // read chars until gets a total token
 func (s *Scanner) read() {
 	var err error
-	fmt.Println("==========", string(s.input.Peek()))
+	// fmt.Println("==========", string(s.input.Peek()))
 	s.SkipWhitespace()
 	if ch := s.input.Peek(); ch == '#' {
 		s.setLex("#", SHARP)
@@ -62,10 +62,9 @@ func (s *Scanner) read() {
 	} else if IsLetter(ch) {
 		err = s.readID()
 	} else if IsOpChar(ch) {
-		fmt.Println("==========", string(s.input.Peek()))
 		err = s.readOp()
 	} else {
-		fmt.Println("==========", string(s.input.Peek()))
+		// fmt.Println("==========", string(s.input.Peek()))
 		fmt.Println("read 不合法的字符串" + string(ch))
 		s.input.Next()
 		s.read()
@@ -86,8 +85,8 @@ func (s *Scanner) readNum() error {
 
 	if ch == '0' {
 		// if ch == '0'但下一个字符为字母则跳过并且报错
-		if ch, _ := s.input.Next(); IsLetter(ch) {
-			for ch := s.input.Peek(); IsLetter(ch); {
+		if ch, _ := s.input.Next(); IsLetter(ch) || IsDigit(ch) {
+			for ch := s.input.Peek(); IsLetter(ch) || IsDigit(ch); {
 				str += string(ch)
 				ch, _ = s.input.Next()
 			}
@@ -132,7 +131,7 @@ func (s *Scanner) readID() error {
 		if IsLetter(ch) || IsDigit(ch) {
 			str += string(ch)
 		} else {
-			fmt.Println("ID:"+str, string(ch))
+			// fmt.Println("ID:"+str, string(ch))
 			break
 		}
 	}
@@ -149,7 +148,7 @@ func (s *Scanner) readID() error {
 func (s *Scanner) readOp() error {
 	// operator: :  :=  +  -  *  /  <  <=  <>  >  >=  =  ;  (  )  #
 	var str string
-	fmt.Println("2323223", string(s.input.Peek()))
+	// fmt.Println("2323223", string(s.input.Peek()))
 	switch ch := s.input.Peek(); ch {
 	case '=', '+', '-', '*', '/', ';', '(', ')', '#':
 		str += string(ch)
@@ -171,7 +170,7 @@ func (s *Scanner) readOp() error {
 		default:
 			if _, ok := keywords[str]; ok {
 				s.setLex(str, keywords[str])
-				s.input.Next()
+				// s.input.Next()
 				return nil
 			}
 			return s.input.Collapse("readOp 不合法的字符串")
@@ -186,22 +185,16 @@ func (s *Scanner) readOp() error {
 
 func main() {
 
-	program := `
-	9xx
-
+	program := `9x9x
 	0099
 	??$$
 	++
 	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
 	`
-	program =
-		`
-	9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
-	
-	`
+
 	scanner := NewScanner(NewInput(program))
 	token, syn := scanner.Next()
-	fmt.Printf("<%s , %d>\n", token, syn)
+	fmt.Printf("<'%s', %d>\n", token, syn)
 	for !scanner.EOF() {
 		token, syn = scanner.Next()
 		fmt.Printf("<'%s', %d>\n", token, syn)
