@@ -126,8 +126,7 @@ func Analysis(s *lexer.Scanner) bool {
 	_, current := s.Next()
 
 	// when stack is not empty
-	for !stack.Empty() {
-		fmt.Println("stack", stack.Len())
+	for stack.Peak() != lexer.SHARP {
 		// 10 == 10
 		if X == current {
 			_, current = s.Next()
@@ -142,7 +141,7 @@ func Analysis(s *lexer.Scanner) bool {
 			fmt.Println("table error", X, current)
 			return false
 		} else if v, ok := analysisTable[X][current]; ok {
-			fmt.Println("production:", v)
+			fmt.Println("产生式:", X, "->", v)
 			stack.Pop()
 			// push the production to stack
 			for i := len(v) - 1; i >= 0; i-- {
@@ -153,48 +152,43 @@ func Analysis(s *lexer.Scanner) bool {
 		}
 		X, ok = stack.Peak().(lexer.Token)
 		if !ok {
-			fmt.Println("stack error")
+			fmt.Println("stack error", stack.Len())
 			return false
 		}
 	}
 	return true
 }
 
-// func main() {
-// 	var program = `9x9x
-// 	0099
-// 	??$$
-// 	++
-// 	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
-// 	`
-
-// 	program := `id + id * id #`
-// 	scanner := lexer.NewScanner(lexer.NewInput(program))
-// 	a, b := scanner.Next()
-// 	for !scanner.EOF() {
-// 		fmt.Println(a, b)
-// 		a, b = scanner.Next()
-// 	}
-// 	// ok := Analysis(scanner)
-// 	// fmt.Println("recognized?", ok)
-// }
-
 func main() {
-
-	program := `	
-	var program = 9x9x
+	var program = `9x9x
 	0099
 	??$$
 	++
 	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
 	`
-	program = `id + id * id #`
 
+	program = `id + id * id #`
 	scanner := lexer.NewScanner(lexer.NewInput(program))
-	token, syn := scanner.Next()
-	fmt.Printf("<'%s', %d>\n", token, syn)
-	for !scanner.EOF() {
-		token, syn = scanner.Next()
-		fmt.Printf("<'%s', %d>\n", token, syn)
-	}
+	ok := Analysis(scanner)
+	fmt.Println("recognized?", ok)
 }
+
+// func main() {
+
+// 	program := `
+// 	var program = 9x9x
+// 	0099
+// 	??$$
+// 	++
+// 	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
+// 	`
+// 	program = `id + id * id #`
+
+// 	scanner := lexer.NewScanner(lexer.NewInput(program))
+// 	token, syn := scanner.Next()
+// 	fmt.Printf("<'%s', %d>\n", token, syn)
+// 	for !scanner.EOF() {
+// 		token, syn = scanner.Next()
+// 		fmt.Printf("<'%s', %d>\n", token, syn)
+// 	}
+// }
