@@ -19,7 +19,7 @@ func NewScanner(input *Input) *Scanner {
 	}
 }
 
-// SkipWhitespace will skip ' \t\n'
+// SkipWhitespace will skip whitespace
 func (s *Scanner) SkipWhitespace() {
 	s.input.SkipWhitespace()
 }

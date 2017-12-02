@@ -7,6 +7,13 @@ import (
 	"github.com/yjhmelody/compiler-lab/stack"
 )
 
+// Syntax
+// E -> T E2
+// E2 -> + T E2 | ε
+// T -> F T2
+// T2 -> * F T2 | ε
+// F -> ( E ) | i
+
 // Right stores the production's right part
 type Right []lexer.Token
 

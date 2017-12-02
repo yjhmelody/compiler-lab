@@ -1,5 +1,6 @@
 # Compiler lab with golang 
 
+The rule's notes of each's part is written to the corresponding source code
 ## lexer
 
 lexer
@@ -10,6 +11,9 @@ lexer
 
 syntax
 * syntax.go
+
+## stack
+* stack.go
 
 ## usage
 

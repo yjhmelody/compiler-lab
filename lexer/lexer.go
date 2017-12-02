@@ -13,7 +13,6 @@ import (
 // ID = [a-zA-Z_$][a-zA-Z_$0-9]*
 // NUM = [0-9] | [1-9][0-9]*
 // whitespace = [ \t\n]
-// 空格有空白、制表符和换行符组成。空格一般用来分隔ID、NUM、运算符、界符和关键字，词法分析阶段通常被忽略
 
 // Token is the set of lexical tokens
 type Token int
