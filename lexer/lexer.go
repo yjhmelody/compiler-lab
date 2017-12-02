@@ -1,4 +1,4 @@
-package main
+package lexer
 
 import (
 	"errors"
@@ -66,6 +66,8 @@ const (
 	SEMCOLON // ;
 	LPAREN   // (
 	RPAREN   // )
+
+	EPISILON // represents the null and is the seperation between lex and syntax
 )
 
 var tokens = [...]string{

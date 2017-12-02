@@ -1,4 +1,4 @@
-package main
+package lexer
 
 import (
 	"fmt"
@@ -183,20 +183,20 @@ func (s *Scanner) readOp() error {
 	return nil
 }
 
-func main() {
+// func main() {
 
-	program := `9x9x
-	0099
-	??$$
-	++
-	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
-	`
+// 	program := `9x9x
+// 	0099
+// 	??$$
+// 	++
+// 	begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
+// 	`
 
-	scanner := NewScanner(NewInput(program))
-	token, syn := scanner.Next()
-	fmt.Printf("<'%s', %d>\n", token, syn)
-	for !scanner.EOF() {
-		token, syn = scanner.Next()
-		fmt.Printf("<'%s', %d>\n", token, syn)
-	}
-}
+// 	scanner := NewScanner(NewInput(program))
+// 	token, syn := scanner.Next()
+// 	fmt.Printf("<'%s', %d>\n", token, syn)
+// 	for !scanner.EOF() {
+// 		token, syn = scanner.Next()
+// 		fmt.Printf("<'%s', %d>\n", token, syn)
+// 	}
+// }
