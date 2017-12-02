@@ -183,6 +183,16 @@ func (s *Scanner) readOp() error {
 	return nil
 }
 
+// LexParse write syn to a file
+// func (s *Scanner) LexParse() {
+// 	token, syn := s.Next()
+// 	fmt.Printf("%s,%d>\n", token, syn)
+// 	for !s.EOF() {
+// 		token, syn = s.Next()
+// 		fmt.Printf("%s,%d\n", token, syn)
+// 	}
+// }
+
 // func main() {
 
 // 	program := `9x9x

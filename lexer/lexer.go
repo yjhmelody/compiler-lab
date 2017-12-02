@@ -32,7 +32,7 @@ func (tok Token) String() string {
 
 // begin x:=9; if x>9 then x:=2*x+1/3; end #
 const (
-	// SHARP is '#' which is the end char
+	// SHARP is '#' which is the end char '$'
 	SHARP Token = iota
 	// keywords
 	BEGIN

@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/yjhmelody/compiler-lab/lexer"
+	"github.com/yjhmelody/compiler-lab/stack"
 )
 
 // Right stores the production's right part
@@ -63,4 +66,45 @@ var analysisTable = AnalysisTable{
 		lexer.RPAREN: nil,
 		lexer.SHARP:  nil,
 	},
+}
+
+// var program = `9x9x
+// 0099
+// ??$$
+// ++
+// begin 9x:=?$00999; if x%><<>9 t99he&n x:=2**x+1/3; end #
+// `
+
+// scanner := NewScanner(NewInput(program))
+// token, syn := scanner.Next()
+// fmt.Printf("<'%s', %d>\n", token, syn)
+// for !scanner.EOF() {
+// 	token, syn = scanner.Next()
+// 	fmt.Printf("<'%s', %d>\n", token, syn)
+// }
+
+// Analysis uses the scanner to recognize LL(1) grammar
+func Analysis(s *lexer.Scanner) {
+	stack := stack.NewStack()
+	stack.Push(lexer.SHARP)
+	stack.Push(E)
+
+	X, ok := stack.Peak().(lexer.Token)
+	if !ok {
+		fmt.Println("error")
+	}
+	// when stack is not empty
+	for X != lexer.SHARP {
+		_, syn := s.Next()
+		if X == syn {
+			stack.Pop()
+		} else if X < lexer.EPISILON {
+			// X is a terminal
+			fmt.Println("a terminal")
+		} else if v, ok := analysisTable[X][syn]; v == nil || !ok {
+			fmt.Println("table error")
+		} else if v, ok := analysisTable[X][syn]; ok {
+
+		}
+	}
 }
