@@ -11,10 +11,10 @@ lexer
 syntax
 * syntax.go
 
-```bash
-cd syntax/ 
+## usage
 
+```bash
 go build  
 
-./syntax
+./compiler-lab
 ```
