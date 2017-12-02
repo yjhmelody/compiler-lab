@@ -128,7 +128,7 @@ func NewInput(program string) *Input {
 
 // EOF returns true when program gets to the end
 func (i *Input) EOF() bool {
-	return i.position >= len(i.program)
+	return i.position >= len(i.program)-1
 }
 
 // Peek returns current position char
