@@ -6,6 +6,8 @@ lexer
 * lexer.go
 * scanner.go
 
+## Syntax
+
 syntax
 * syntax.go
 
