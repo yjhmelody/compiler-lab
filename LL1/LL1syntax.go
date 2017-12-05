@@ -34,36 +34,31 @@ const (
 	F
 )
 
+// when meets nil, analysis will warning and ignore some syntax error
 var analysisTable = AnalysisTable{
 	E: {
-		lexer.ID:     Right{T, E2},
-		lexer.ADD:    nil,
-		lexer.MUL:    nil,
+		lexer.ID: Right{T, E2},
+		// lexer.ADD:    nil,
+		// lexer.MUL:    nil,
 		lexer.LPAREN: Right{T, E2},
 		lexer.RPAREN: nil,
 		lexer.SHARP:  nil,
 	},
 	E2: {
-		lexer.ID:     nil,
 		lexer.ADD:    Right{lexer.ADD, T, E2},
-		lexer.MUL:    nil,
-		lexer.LPAREN: nil,
 		lexer.RPAREN: Right{EPISILON},
 		lexer.SHARP:  Right{EPISILON},
 	},
 	T: {
 		lexer.ID:     Right{F, T2},
 		lexer.ADD:    nil,
-		lexer.MUL:    nil,
 		lexer.LPAREN: Right{F, T2},
 		lexer.RPAREN: nil,
 		lexer.SHARP:  nil,
 	},
 	T2: {
-		lexer.ID:     nil,
 		lexer.ADD:    Right{EPISILON},
 		lexer.MUL:    Right{lexer.MUL, F, T2},
-		lexer.LPAREN: nil,
 		lexer.RPAREN: Right{EPISILON},
 		lexer.SHARP:  Right{EPISILON},
 	},
@@ -79,33 +74,35 @@ var analysisTable = AnalysisTable{
 
 // Analysis uses the scanner to recognize LL(1) grammar
 func Analysis(s *lexer.Scanner) bool {
+	flag := true
 	stack := stack.NewStack()
 	stack.Push(lexer.SHARP)
-	// !!!!!
 	stack.Push(E)
 
 	X, ok := stack.Peak().(lexer.Token)
 	if !ok {
 		fmt.Println("stack error")
 	}
-	_, current := s.Next()
-
+	_, curTok := s.Next()
 	// when stack is not empty
 	for stack.Peak() != lexer.SHARP {
-		// 10 == 10
-		if X == current {
-			_, current = s.Next()
+		if X == curTok {
+			fmt.Println("matched:", X)
+			_, curTok = s.Next()
 			stack.Pop()
-			// fmt.Println("匹配:", current)
-
 		} else if X < lexer.EPISILON {
 			// when X is a terminal
-			fmt.Println("terminal error", X, current)
-			return false
-		} else if v, _ := analysisTable[X][current]; v == nil {
-			fmt.Println("table error", X, current)
-			return false
-		} else if v, ok := analysisTable[X][current]; ok {
+			fmt.Println("terminal error:", X, curTok)
+			flag = false
+		} else if _, ok := analysisTable[X][curTok]; !ok {
+			fmt.Println("ignore the token:", X, curTok)
+			_, curTok = s.Next()
+			flag = false
+		} else if v := analysisTable[X][curTok]; v == nil {
+			fmt.Println("synch error:", X, curTok)
+			stack.Pop()
+			flag = false
+		} else if v, ok := analysisTable[X][curTok]; ok {
 			fmt.Println("production:", X, "->", v)
 			stack.Pop()
 			// push the production to stack
@@ -121,5 +118,5 @@ func Analysis(s *lexer.Scanner) bool {
 			return false
 		}
 	}
-	return true
+	return flag
 }

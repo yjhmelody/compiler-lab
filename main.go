@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-
-	program := `id + id * id #`
+	program := `id +++ id3`
+	// fmt.Scanf("%s", program)
 	ok := LL1.Analysis(lexer.NewScanner(lexer.NewInput(program)))
 	fmt.Println("recognize?", ok)
 }
