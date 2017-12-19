@@ -12,9 +12,14 @@ import (
 var scanner *lexer.Scanner
 var table = &stack.Stack{}
 var offsets = &stack.Stack{}
-var globalSymbols map[lexer.Token]interface{}
+var symbolTable *SymbolTable
+
+// var globalSymbols map[lexer.Token]map[string]string
+var Tvalue map[string]string
 
 func init() {
+	fmt.Println("init")
+	Tvalue = make(map[string]string)
 	table = stack.NewStack()
 	offsets = stack.NewStack()
 }
@@ -49,8 +54,8 @@ func parse_P() bool {
 
 func parse_M() {
 	// t = mktable(nil); push(t,tblptr); push(0,offset)
-	t := mktable("", nil)
-	table.Push(t)
+	symbolTable = mktable("", nil)
+	table.Push(symbolTable)
 	offsets.Push(0)
 }
 
@@ -73,7 +78,9 @@ func parse_D() bool {
 				fmt.Println("stack error", offsets.Len())
 				return false
 			}
-			Tvalue, ok := globalSymbols[T].(map[string]string)
+			// Tvalue, ok := globalSymbols[T].(map[string]string)
+			// Tvalue := globalSymbols[T]
+			// Tvalue := TTable
 			if !ok {
 				fmt.Println("globalSymbols[T] error")
 				return false
@@ -97,11 +104,20 @@ func parse_D() bool {
 
 func parse_T() string {
 	tok, _ := scanner.Next()
-	Tvalue, ok := globalSymbols[T].(map[string]string)
-	if !ok {
-		fmt.Println("globalSymbols[T] error")
-		panic("paser_T")
-	}
+	// if _, ok := globalSymbols[T]; !ok {
+	// 	fmt.Println(ok)
+	// 	globalSymbols[T] = make(map[string]string)
+	// }
+	// Tvalue := globalSymbols[T]
+
+	// Tvalue := TTable
+
+	// Tvalue = map[string]string
+	// Tvalue, ok := globalSymbols[T].(map[string]string)
+	// if !ok {
+	// fmt.Println("globalSymbols[T] error")
+	// panic("paser_T")
+	// }
 
 	// T.type = integer; T.width = 4
 	// T.type = real; T.width = 8
@@ -124,7 +140,6 @@ func parse_T() string {
 }
 
 func parse_D2() {
-
 	if _, syn := scanner.Next(); syn == lexer.SEMCOLON {
 		parse_D()
 		parse_D2()
@@ -134,4 +149,8 @@ func parse_D2() {
 func main() {
 	program := `id1 : real ; id2:ptr integer; id3:integer`
 	Parse(lexer.NewScanner(lexer.NewInput(program)))
+	fmt.Println("width", symbolTable.width)
+	for k, v := range symbolTable.symbols {
+		fmt.Println(k, v)
+	}
 }

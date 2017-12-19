@@ -21,6 +21,7 @@ type SymbolTable struct {
 // 参数previous指向先前创建的符号，放在新符号表的表头。
 func mktable(name string, s *Symbol) *SymbolTable {
 	st := &SymbolTable{}
+	st.symbols = make(map[string]Symbol)
 	if name == "" {
 		return st
 	}
