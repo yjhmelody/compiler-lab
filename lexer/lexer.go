@@ -40,6 +40,9 @@ const (
 	WHILE
 	DO
 	END
+	// INTEGER
+	// REAL
+	// PTR
 	_
 	_
 	_
@@ -157,6 +160,21 @@ func (i *Input) Next() (byte, error) {
 		i.col = 0
 	} else {
 		i.col++
+	}
+	return i.program[i.position], nil
+}
+
+// Back returns the prev char
+func (i *Input) Back() (byte, error) {
+	if i.position == 0 {
+		return i.program[0], nil
+	}
+	i.position--
+	if i.program[i.position] == '\n' {
+		i.row--
+		i.col = 0
+	} else {
+		i.col--
 	}
 	return i.program[i.position], nil
 }
