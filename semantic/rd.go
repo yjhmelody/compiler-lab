@@ -56,6 +56,7 @@ func parse_M() {
 	// t = mktable(nil); push(t,tblptr); push(0,offset)
 	symbolTable = mktable("", nil)
 	table.Push(symbolTable)
+	// 0
 	offsets.Push(0)
 }
 
@@ -65,9 +66,11 @@ func parse_D() bool {
 	// }
 
 	// id : T D2
-	if _, syn := scanner.Next(); syn == lexer.ID {
-		if tok, syn := scanner.Next(); syn == lexer.COLON {
+	if tok, syn := scanner.Next(); syn == lexer.ID {
+		if _, syn := scanner.Next(); syn == lexer.COLON {
+
 			parse_T()
+
 			st, ok := table.Peak().(*SymbolTable)
 			if !ok {
 				fmt.Println("stack error", table.Len())
@@ -90,12 +93,12 @@ func parse_D() bool {
 			// top(offset) = top(offset) + T.width
 			st.enter(tok, Tvalue["type"], offset)
 			offsets.Pop()
-			wdith, err := strconv.Atoi(Tvalue["width"])
+			// fmt.Println("offsets len", offsets.Len())
+			width, err := strconv.Atoi(Tvalue["width"])
 			if err != nil {
 				fmt.Println("err")
 			}
-			offsets.Push(wdith + offset)
-
+			offsets.Push(width + offset)
 			parse_D2()
 		}
 	}
@@ -104,20 +107,6 @@ func parse_D() bool {
 
 func parse_T() string {
 	tok, _ := scanner.Next()
-	// if _, ok := globalSymbols[T]; !ok {
-	// 	fmt.Println(ok)
-	// 	globalSymbols[T] = make(map[string]string)
-	// }
-	// Tvalue := globalSymbols[T]
-
-	// Tvalue := TTable
-
-	// Tvalue = map[string]string
-	// Tvalue, ok := globalSymbols[T].(map[string]string)
-	// if !ok {
-	// fmt.Println("globalSymbols[T] error")
-	// panic("paser_T")
-	// }
 
 	// T.type = integer; T.width = 4
 	// T.type = real; T.width = 8
@@ -130,12 +119,14 @@ func parse_T() string {
 		Tvalue["type"] = tok
 		Tvalue["width"] = "8"
 	case "ptr":
-		Tvalue["type"] = tok + parse_T()
+		Tvalue["type"] = tok + " " + parse_T()
 		// Tvalue["type"] = tok + T2["type"]
 		Tvalue["width"] = "4"
 	default:
 		fmt.Println("T error")
 	}
+	// fmt.Println("parse_T", tok, Tvalue["width"])
+
 	return tok
 }
 
@@ -147,7 +138,7 @@ func parse_D2() {
 }
 
 func main() {
-	program := `id1 : real ; id2:ptr integer; id3:integer`
+	program := `id1:real; id2:ptr integer; id3:integer`
 	Parse(lexer.NewScanner(lexer.NewInput(program)))
 	fmt.Println("width", symbolTable.width)
 	for k, v := range symbolTable.symbols {
