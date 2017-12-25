@@ -6,7 +6,6 @@ import (
 
 	"github.com/yjhmelody/compiler-lab/lexer"
 	"github.com/yjhmelody/compiler-lab/stack"
-	// "github.com/yjhmelody/compiler-lab/stack"
 )
 
 var scanner *lexer.Scanner
@@ -61,9 +60,6 @@ func parse_M() {
 }
 
 func parse_D() bool {
-	// if scanner.EOF() {
-	// 	return false
-	// }
 
 	// id : T D2
 	if tok, syn := scanner.Next(); syn == lexer.ID {
@@ -93,7 +89,6 @@ func parse_D() bool {
 			// top(offset) = top(offset) + T.width
 			st.enter(tok, Tvalue["type"], offset)
 			offsets.Pop()
-			// fmt.Println("offsets len", offsets.Len())
 			width, err := strconv.Atoi(Tvalue["width"])
 			if err != nil {
 				fmt.Println("err")
@@ -124,8 +119,8 @@ func parse_T() string {
 		Tvalue["width"] = "4"
 	default:
 		fmt.Println("T error")
+		panic("parse_T")
 	}
-	// fmt.Println("parse_T", tok, Tvalue["width"])
 
 	return tok
 }
@@ -138,7 +133,7 @@ func parse_D2() {
 }
 
 func main() {
-	program := `id1:real; id2:ptr integer; id3:integer`
+	program := `id1:real; id2:ptr integer; id3:integer; id4: real;`
 	Parse(lexer.NewScanner(lexer.NewInput(program)))
 	fmt.Println("width", symbolTable.width)
 	for k, v := range symbolTable.symbols {
